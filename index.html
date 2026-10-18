@@ -447,6 +447,127 @@
     .menu-item:hover { background-color: var(--bg-hover); color: var(--accent); }
     .menu-item:active { background-color: var(--bg-active); }
 
+    /* Help button & Full-screen Help Modal */
+    .top-actions {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    .help-btn {
+      width: 64px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid var(--line);
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink);
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+    .help-btn:hover { background-color: var(--bg-hover); color: var(--accent); }
+    .help-btn:active { background-color: var(--bg-active); }
+
+    .help-scroll {
+      flex: 1 1 0%;
+      min-height: 0;
+      overflow-y: auto;
+      width: 100%;
+    }
+
+    .help-container {
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 28px 56px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .help-lead-title {
+      font-family: var(--serif);
+      font-size: clamp(22px, 3.4vw, 30px);
+      font-weight: 700;
+      line-height: 1.45;
+      color: var(--ink);
+      margin: 0 0 12px 0;
+      border-left: 2px solid var(--accent);
+      padding-left: 16px;
+    }
+
+    .help-lead-text {
+      font-family: var(--serif);
+      font-size: 16px;
+      line-height: 2.0;
+      color: var(--ink);
+      margin: 0;
+    }
+
+    .help-section {
+      border-top: 1px solid var(--line);
+      padding-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .help-section-title {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 0;
+      letter-spacing: 0.03em;
+    }
+
+    .help-step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .help-step-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .help-step-head {
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .help-step-desc {
+      font-size: 14px;
+      line-height: 1.85;
+      color: var(--ink-muted);
+      margin: 0;
+    }
+
+    .help-start-btn {
+      width: 100%;
+      height: 64px;
+      background-color: var(--accent-soft);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.12s ease;
+      margin-top: 8px;
+    }
+    .help-start-btn:hover { background-color: var(--accent-hover); }
+    .help-start-btn:active { background-color: rgba(201, 100, 66, 0.24); }
+
     /* Subtle transition animation */
     @keyframes fadeSlideUp {
       0% { opacity: 0; transform: translateY(10px); }
@@ -463,13 +584,18 @@
       青空アテンション
     </button>
 
-    <button type="button" id="openMenuBtn" class="hamburger-btn" aria-label="メニューを開く">
-      <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <line x1="0" y1="2" x2="28" y2="2" stroke="#141413" stroke-width="2" />
-        <line x1="0" y1="10" x2="28" y2="10" stroke="#141413" stroke-width="2" />
-        <line x1="0" y1="18" x2="28" y2="18" stroke="#141413" stroke-width="2" />
-      </svg>
-    </button>
+    <div class="top-actions">
+      <button type="button" id="openHelpBtn" class="help-btn" aria-label="ヘルプを開く" title="このアプリについて">
+        ？
+      </button>
+      <button type="button" id="openMenuBtn" class="hamburger-btn" aria-label="メニューを開く" title="メニュー">
+        <svg width="28" height="20" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="2" x2="28" y2="2" stroke="#141413" stroke-width="2" />
+          <line x1="0" y1="10" x2="28" y2="10" stroke="#141413" stroke-width="2" />
+          <line x1="0" y1="18" x2="28" y2="18" stroke="#141413" stroke-width="2" />
+        </svg>
+      </button>
+    </div>
   </header>
 
   <!-- MAIN STAGE -->
@@ -555,7 +681,7 @@
 
     <nav class="menu-list" aria-label="ページ切替">
       <button type="button" data-nav-page="stream" class="menu-nav-btn menu-item">
-        <span>ストリーム</span>
+        <span>ホーム</span>
         <span style="font-size:16px;color:var(--ink-faint);">→</span>
       </button>
 
@@ -569,6 +695,69 @@
         <span style="font-size:16px;color:var(--ink-faint);">→</span>
       </button>
     </nav>
+  </div>
+
+  <!-- FULL-SCREEN HELP OVERLAY -->
+  <div id="helpModal" class="menu-fullscreen hidden" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
+    <div class="top-bar">
+      <span class="brand-title" id="helpModalTitle">青空アテンションについて</span>
+      <button type="button" id="closeHelpBtn" class="hamburger-btn" aria-label="ヘルプを閉じる">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="2" y1="2" x2="20" y2="20" stroke="#141413" stroke-width="2" />
+          <line x1="20" y1="2" x2="2" y2="20" stroke="#141413" stroke-width="2" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="help-scroll">
+      <div class="help-container">
+        <div>
+          <h2 class="help-lead-title">運命の一冊に、惰性で出会う。</h2>
+          <p class="help-lead-text">
+            「青空アテンション」は、青空文庫で読める2,000篇以上の作品を多次元の作風グラフで繋ぎ、ショート動画のように1冊ずつめくりながら直感的に本と出会えるツールです。<br>
+            腰を据えて本を探す元気がないときでも、2〜3分ほどなんとなく選び続けるだけで、あなたの好みに寄り添う作品が次々と連鎖して流れてきます。
+          </p>
+        </div>
+
+        <div class="help-section">
+          <h3 class="help-section-title">使い方</h3>
+          <div class="help-step-list">
+            <div class="help-step-item">
+              <div class="help-step-head">1. ホームで「Skip」か「Attention」を選ぶ</div>
+              <p class="help-step-desc">
+                表示された作品のタイトルや冒頭の一節から、なんとなく気になったら右下の <strong>Attention</strong>、今の気分でなければ左下の <strong>Skip</strong> を押してください（左右スワイプやキーボードの ← / → キーでも操作できます）。
+              </p>
+            </div>
+
+            <div class="help-step-item">
+              <div class="help-step-head">2. グラフから好みが自動的に連鎖する</div>
+              <p class="help-step-desc">
+                すべての作品には8次元の作風パラメータ（叙情・陰影・幻想・内省・格調・疾走感・熱量・モダン）が付与されています。あなたの選択から好みをリアルタイムに学習し、グラフ上で近くにある作品や意外な名作を推薦します。
+              </p>
+            </div>
+
+            <div class="help-step-item">
+              <div class="help-step-head">3. Attention一覧・作品グラフで振り返る</div>
+              <p class="help-step-desc">
+                右上のメニュー（☰）から <strong>Attention一覧</strong> を開くと、過去に気になった作品を遡って青空文庫で全文を読んだり、「ここから連鎖する」でその作品を起点に探索を再開できます。<br>
+                <strong>作品グラフ</strong> では全作品の繋がりとあなたの軌跡（テラコッタ色の線）をマップ上で俯瞰でき、ピンチ操作やマウスホイールで最大25倍まで拡大できます。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h3 class="help-section-title">自動セーブについて</h3>
+          <p class="help-step-desc">
+            現在ホームに表示されている作品や、これまでにAttentionした履歴・学習状態はお使いのブラウザに自動保存されます。ページを閉じても、次回開いたときにはそのまま続きから再開できます。
+          </p>
+
+          <button type="button" id="startFromHelpBtn" class="help-start-btn">
+            ホームへ進んで読書をはじめる →
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -841,6 +1030,8 @@ function navigateToPage(pageName) {
   });
 
   document.getElementById("menuModal").classList.add("hidden");
+  const helpEl = document.getElementById("helpModal");
+  if (helpEl) helpEl.classList.add("hidden");
 
   if (pageName === "history") {
     renderHistoryPage();
@@ -860,7 +1051,7 @@ function renderHistoryPage() {
     container.innerHTML = `
       <div style="padding:64px 28px;text-align:center;color:var(--ink-muted);font-family:var(--serif);line-height:2.0;">
         まだAttentionした作品がありません。<br>
-        ストリームで心惹かれた作品の「Attention」を押すと、ここに連鎖が記録されます。
+        ホームで心惹かれた作品の「Attention」を押すと、ここに連鎖が記録されます。
       </div>
     `;
     return;
@@ -1031,8 +1222,37 @@ function initApp() {
   document.getElementById("btnSkip").addEventListener("click", () => handleChoice("skip"));
   document.getElementById("btnAttention").addEventListener("click", () => handleChoice("attention"));
 
+  const HELP_SEEN_KEY = "aozora_attention_help_seen_v1";
+
+  function openHelpModal() {
+    document.getElementById("menuModal").classList.add("hidden");
+    document.getElementById("helpModal").classList.remove("hidden");
+  }
+
+  function closeHelpModal() {
+    document.getElementById("helpModal").classList.add("hidden");
+    try {
+      localStorage.setItem(HELP_SEEN_KEY, "1");
+    } catch (e) {}
+  }
+
+  // Open Help automatically for first-time visitors
+  try {
+    if (!localStorage.getItem(HELP_SEEN_KEY)) {
+      openHelpModal();
+    }
+  } catch (e) {}
+
   document.getElementById("brandHomeBtn").addEventListener("click", () => navigateToPage("stream"));
+  document.getElementById("openHelpBtn").addEventListener("click", openHelpModal);
+  document.getElementById("closeHelpBtn").addEventListener("click", closeHelpModal);
+  document.getElementById("startFromHelpBtn").addEventListener("click", () => {
+    closeHelpModal();
+    navigateToPage("stream");
+  });
+
   document.getElementById("openMenuBtn").addEventListener("click", () => {
+    document.getElementById("helpModal").classList.add("hidden");
     document.getElementById("menuModal").classList.remove("hidden");
   });
   document.getElementById("closeMenuBtn").addEventListener("click", () => {
@@ -1217,10 +1437,21 @@ function initApp() {
     }
   });
 
-  // Keyboard navigation on Stream
+  // Keyboard navigation on Home
   window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      if (!document.getElementById("helpModal").classList.contains("hidden")) {
+        closeHelpModal();
+        return;
+      }
+      if (!document.getElementById("menuModal").classList.contains("hidden")) {
+        document.getElementById("menuModal").classList.add("hidden");
+        return;
+      }
+    }
     if (document.getElementById("pageStream").classList.contains("hidden")) return;
     if (!document.getElementById("menuModal").classList.contains("hidden")) return;
+    if (!document.getElementById("helpModal").classList.contains("hidden")) return;
     if (e.key === "ArrowRight" || e.key === "Enter" || e.key === "l" || e.key === "L") {
       e.preventDefault();
       handleChoice("attention");
