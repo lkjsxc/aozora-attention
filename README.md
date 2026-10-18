@@ -25,41 +25,6 @@
 
 ---
 
-## ホスティング手順
-
-### 1. Cloudflare Pages で独自ドメイン（lkjsxc.com）にホストする場合
-
-Cloudflareのアカウントをお持ちの場合、わずか数分で独自ドメインへのデプロイが完了します。
-
-#### 手順A: Direct Upload（最も簡単・数分で公開）
-1. [Cloudflare ダッシュボード](https://dash.cloudflare.com/) にログインします。
-2. 左メニューの **Workers & Pages** ＞ **Create application** ＞ **Pages** ＞ **Upload assets** を選択します。
-3. プロジェクト名を入力（例: `aozora-attention`）。
-4. 本zipを展開したフォルダ（`index.html` や `_headers` が入っているフォルダ）をそのままドラッグ＆ドロップして **Deploy site** をクリックします。
-5. デプロイ完了後、プロジェクト画面の **Custom domains** タブを開きます。
-6. **Set up a custom domain** をクリックし、所有されているドメイン（例: `lkjsxc.com` またはサブドメイン `aozora.lkjsxc.com`）を入力します。
-7. Cloudflareで管理されているドメインであれば、DNSレコードが自動設定され、数分で無料の常時SSL（HTTPS）付きで公開されます。
-
-#### 手順B: GitHub経由（更新を自動反映させたい場合）
-1. GitHubに新規リポジトリを作成し、本フォルダのファイルをプッシュします。
-2. Cloudflare Pagesで **Connect to Git** を選び、該当リポジトリを選択します。
-3. Build command: 空欄（設定不要）
-4. Build output directory: `/`（ルート）
-5. デプロイ後、上記と同様に **Custom domains** から `lkjsxc.com` を接続します。
-
----
-
-### 2. GitHub Pages でホストする場合
-
-1. GitHubで新規リポジトリ（例: `aozora-attention`）を作成します。
-2. 本フォルダ内のファイル（`index.html` など）をリポジトリのルートにコミット＆プッシュします。
-3. リポジトリの **Settings** ＞ **Pages** を開きます。
-4. **Source** を `Deploy from a branch` にし、`main`（または `master`）ブランチの `/ (root)` を選択して **Save** します。
-5. 数十秒で `https://<あなたのユーザー名>.github.io/<リポジトリ名>/` で公開されます。
-6. 独自ドメインを適用したい場合は、同じ画面の **Custom domain** に `lkjsxc.com` を入力してください。
-
----
-
 ## クレジット・著作権・ライセンスについて
 
 ### 青空文庫および収録作品の権利について
