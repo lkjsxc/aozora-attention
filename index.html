@@ -333,11 +333,63 @@
     }
     .graph-canvas:active { cursor: grabbing; }
 
+    /* Graph Top-Left Legend Bar */
+    .graph-legend-bar {
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+      padding: 8px 14px;
+      background-color: rgba(250, 249, 245, 0.94);
+      border: 1px solid var(--line-strong);
+      font-size: 12px;
+      color: var(--ink-muted);
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--sans);
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .legend-dot-selected {
+      width: 10px;
+      height: 10px;
+      background-color: var(--ink);
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+      display: inline-block;
+    }
+
+    .legend-dot-related {
+      width: 10px;
+      height: 10px;
+      background-color: var(--accent);
+      outline: 2px solid rgba(201, 100, 66, 0.38);
+      outline-offset: 1px;
+      display: inline-block;
+    }
+
+    .legend-dot-liked {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent);
+      display: inline-block;
+    }
+
     /* Edge Zoom Controls (Sharp flat squares at right edge) */
     .graph-zoom-dock {
       position: absolute;
       right: 16px;
-      bottom: 84px;
+      bottom: 128px;
       display: flex;
       flex-direction: column;
       border: 1px solid var(--line-strong);
@@ -361,6 +413,65 @@
     .zoom-btn:hover { background-color: var(--bg-hover); }
     .zoom-btn:active { background-color: var(--bg-active); }
 
+    /* Graph Related Works Strip (Above Bottom Bar) */
+    .graph-related-strip {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 64px;
+      height: 46px;
+      background-color: rgba(250, 249, 245, 0.96);
+      border-top: 1px solid var(--line-strong);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+      z-index: 20;
+      scrollbar-width: none;
+    }
+    .graph-related-strip::-webkit-scrollbar { display: none; }
+
+    .graph-related-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+      padding-right: 4px;
+    }
+
+    .graph-related-chip {
+      height: 30px;
+      padding: 0 10px;
+      border: 1px solid var(--line-strong);
+      background-color: var(--bg);
+      font-family: var(--serif);
+      font-size: 12px;
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+    .graph-related-chip:hover {
+      background-color: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .graph-related-chip:active {
+      background-color: var(--accent-hover);
+    }
+
+    .graph-related-sim {
+      font-family: var(--sans);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
     /* Graph Bottom Selected Node Flat Bar */
     .graph-bottom-bar {
       position: absolute;
@@ -368,8 +479,8 @@
       right: 0;
       bottom: 0;
       height: 64px;
-      background-color: rgba(250, 249, 245, 0.96);
-      border-top: 1px solid var(--line-strong);
+      background-color: rgba(250, 249, 245, 0.98);
+      border-top: 1px solid var(--line);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -380,6 +491,9 @@
     .graph-sel-info {
       min-width: 0;
       padding-right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
     .graph-sel-title {
@@ -387,6 +501,14 @@
       font-size: 15px;
       font-weight: 700;
       color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .graph-sel-sub {
+      font-size: 11px;
+      color: var(--ink-muted);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -647,17 +769,30 @@
     <section id="pageGraph" class="page-graph hidden">
       <canvas id="fullGraphCanvas" class="graph-canvas"></canvas>
 
+      <!-- Graph Legend Bar -->
+      <div class="graph-legend-bar" aria-hidden="true">
+        <span class="legend-item"><span class="legend-dot-selected"></span>選択中の作品</span>
+        <span class="legend-item"><span class="legend-dot-related"></span>関連の強い作品（上位8篇）</span>
+        <span class="legend-item"><span class="legend-dot-liked"></span>Attention済</span>
+      </div>
+
       <!-- Screen-Edge Zoom Buttons -->
       <div class="graph-zoom-dock">
         <button type="button" id="zoomInGraphBtn" class="zoom-btn" aria-label="拡大">＋</button>
         <button type="button" id="zoomOutGraphBtn" class="zoom-btn" aria-label="縮小">－</button>
-        <button type="button" id="recenterGraphBtn" class="zoom-btn" aria-label="現在地へ" style="font-size:15px;">⌖</button>
+        <button type="button" id="recenterGraphBtn" class="zoom-btn" aria-label="選択中の作品を中心に表示" title="選択中の作品を中心に表示" style="font-size:15px;">⌖</button>
+      </div>
+
+      <!-- Strongly Related Works Quick Strip -->
+      <div id="graphRelatedStrip" class="graph-related-strip" aria-label="関連の強い作品">
+        <!-- Populated by JS -->
       </div>
 
       <!-- Flat Selected Work Bar at Bottom Edge -->
       <div class="graph-bottom-bar">
         <div class="graph-sel-info">
           <div id="graphSelectedTitle" class="graph-sel-title">檸檬 — 梶井 基次郎</div>
+          <div id="graphSelectedSub" class="graph-sel-sub">耽美・感覚 ・ 大正14年 (1925) ・ 約4,900字</div>
         </div>
         <button type="button" id="graphJumpBtn" class="graph-sel-jump">
           この作品へ
@@ -740,7 +875,7 @@
               <div class="help-step-head">3. Attention一覧・作品グラフで振り返る</div>
               <p class="help-step-desc">
                 右上のメニュー（☰）から <strong>Attention一覧</strong> を開くと、過去に気になった作品を遡って青空文庫で全文を読んだり、「ここから連鎖する」でその作品を起点に探索を再開できます。<br>
-                <strong>作品グラフ</strong> では全作品の繋がりとあなたの軌跡（テラコッタ色の線）をマップ上で俯瞰でき、ピンチ操作やマウスホイールで最大25倍まで拡大できます。
+                <strong>作品グラフ</strong> では全作品の繋がりとあなたの軌跡（テラコッタ色の線）をマップ上で俯瞰できます。グラフ上の作品（点）をタップすると、関連の強い上位8篇が二重リングと接続線で浮かび上がり、下部の関連作品チップから次々と連鎖的に探索できます（最大25倍まで拡大可能）。
               </p>
             </div>
           </div>
@@ -894,19 +1029,29 @@ function ensureGraphPositions() {
 
 function getNeighbors(work) {
   if (graphEdges[work.id]) return graphEdges[work.id];
-  const list = [];
-  // Sample up to 250 candidates for blazing responsiveness
-  const step = Math.max(1, Math.floor(worksCatalog.length / 250));
-  for (let i = 0; i < worksCatalog.length; i += step) {
+  const rawList = [];
+  for (let i = 0; i < worksCatalog.length; i++) {
     const wB = worksCatalog[i];
     if (wB.id === work.id) continue;
     let sim = cosineSim(work.v, wB.v);
-    if (work.a === wB.a) sim = Math.min(0.99, sim + 0.03);
-    if (work.c === wB.c) sim = Math.min(0.99, sim + 0.015);
-    list.push({ targetId: wB.id, weight: sim });
+    if (work.a === wB.a) sim = Math.min(0.995, sim + 0.022);
+    if (work.c === wB.c) sim = Math.min(0.995, sim + 0.014);
+    if (!wB.t.includes("（")) sim = Math.min(0.998, sim + 0.012);
+    rawList.push({ targetId: wB.id, author: wB.a, weight: sim });
   }
-  list.sort((a, b) => b.weight - a.weight);
-  graphEdges[work.id] = list.slice(0, 12);
+  rawList.sort((a, b) => b.weight - a.weight);
+
+  // Keep a balanced mix so one author doesn't monopolize all related slots
+  const selected = [];
+  const authorCounts = {};
+  for (let i = 0; i < rawList.length && selected.length < 12; i++) {
+    const item = rawList[i];
+    const cnt = authorCounts[item.author] || 0;
+    if (cnt >= 3 && i < rawList.length - 12) continue;
+    authorCounts[item.author] = cnt + 1;
+    selected.push({ targetId: item.targetId, weight: item.weight });
+  }
+  graphEdges[work.id] = selected;
   return graphEdges[work.id];
 }
 
@@ -1085,7 +1230,62 @@ function updateSelectedGraphBar(workId) {
   const w = worksCatalog.find(x => x.id === workId) || currentWork || worksCatalog[0];
   if (!w) return;
   selectedGraphWorkId = w.id;
-  document.getElementById("graphSelectedTitle").textContent = `${w.t} — ${w.a} (約${formatCharCount(w)}字)`;
+  document.getElementById("graphSelectedTitle").textContent = `${w.t} — ${w.a}`;
+  const subEl = document.getElementById("graphSelectedSub");
+  if (subEl) {
+    subEl.textContent = `${w.c} ・ ${w.e} ・ 約${formatCharCount(w)}字`;
+  }
+
+  const stripEl = document.getElementById("graphRelatedStrip");
+  if (stripEl) {
+    const nbs = getNeighbors(w).slice(0, 8);
+    const chipsHtml = nbs.map((nb, idx) => {
+      const nw = worksCatalog.find(x => x.id === nb.targetId);
+      if (!nw) return "";
+      const pct = Math.min(99, Math.max(70, Math.round(nb.weight * 100)));
+      return `<button type="button" class="graph-related-chip" data-related-id="${nw.id}" title="${nw.t}（${nw.a}）を選択">` +
+        `<span class="graph-related-sim">#${idx + 1} (${pct}%)</span>` +
+        `<span>${nw.t}</span>` +
+        `</button>`;
+    }).join("");
+    stripEl.innerHTML = `<span class="graph-related-label">関連の強い作品:</span>` + chipsHtml;
+  }
+}
+
+function drawGraphLabelPill(ctx, text, subText, x, y, isPrimary, isRelated) {
+  ctx.save();
+  ctx.font = isPrimary ? "700 12px serif" : (isRelated ? "600 11px serif" : "10px serif");
+  const textW = ctx.measureText(text).width;
+  let subW = 0;
+  if (subText) {
+    ctx.font = "9px sans-serif";
+    subW = ctx.measureText(subText).width;
+  }
+  const boxW = Math.max(textW, subW) + 12;
+  const boxH = subText ? 28 : 18;
+  const bx = x - boxW / 2;
+  const by = y - 12;
+
+  ctx.fillStyle = isPrimary ? "rgba(20, 20, 19, 0.92)" : "rgba(250, 249, 245, 0.92)";
+  ctx.fillRect(bx, by, boxW, boxH);
+
+  if (isRelated || isPrimary) {
+    ctx.strokeStyle = isPrimary ? "#141413" : "#C96442";
+    ctx.lineWidth = isPrimary ? 1.2 : 1.0;
+    ctx.strokeRect(bx, by, boxW, boxH);
+  }
+
+  ctx.textAlign = "center";
+  ctx.fillStyle = isPrimary ? "#FAF9F5" : "#141413";
+  ctx.font = isPrimary ? "700 12px serif" : (isRelated ? "600 11px serif" : "10px serif");
+  ctx.fillText(text, x, y + 1);
+
+  if (subText) {
+    ctx.fillStyle = isPrimary ? "#E4E1D6" : "#C96442";
+    ctx.font = "600 9px sans-serif";
+    ctx.fillText(subText, x, y + 12);
+  }
+  ctx.restore();
 }
 
 function drawNetworkGraph() {
@@ -1102,40 +1302,78 @@ function drawNetworkGraph() {
 
   const W = rect.width;
   const H = rect.height;
+  const bottomDockHeight = 110;
   ctx.fillStyle = "#FAF9F5";
   ctx.fillRect(0, 0, W, H);
 
   const cx = W / 2 + graphView.x;
-  const cy = (H - 64) / 2 + graphView.y;
-  const responsiveBase = Math.min(W, H - 64) / 620;
+  const cy = (H - bottomDockHeight) / 2 + graphView.y;
+  const responsiveBase = Math.min(W, H - bottomDockHeight) / 620;
   const zoom = graphView.zoom * responsiveBase;
 
   const likedList = swipeHistory.filter(h => h.action === "attention");
   const likedSet = new Set(likedList.map(h => h.workId));
   const skippedSet = new Set(swipeHistory.filter(h => h.action === "skip").map(h => h.workId));
 
-  // Focus web lines around current / selected / liked nodes
-  const focusIds = [currentWork && currentWork.id, selectedGraphWorkId, ...likedList.slice(0, 15).map(x => x.workId)].filter(Boolean);
-  ctx.lineWidth = 0.8;
-  focusIds.forEach(fid => {
+  // Identify selected work and its top 8 strongly related works
+  const selectedWork = worksCatalog.find(x => x.id === selectedGraphWorkId) || currentWork || worksCatalog[0];
+  const selectedNeighbors = selectedWork ? getNeighbors(selectedWork).slice(0, 8) : [];
+  const relatedRankMap = new Map();
+  selectedNeighbors.forEach((nb, idx) => {
+    relatedRankMap.set(nb.targetId, { rank: idx + 1, weight: nb.weight });
+  });
+
+  // 1. Subtle background web around Attention-liked works
+  const bgFocusIds = [currentWork && currentWork.id, ...likedList.slice(0, 12).map(x => x.workId)].filter(Boolean);
+  ctx.lineWidth = 0.7;
+  bgFocusIds.forEach(fid => {
+    if (selectedWork && fid === selectedWork.id) return;
     const w = worksCatalog.find(x => x.id === fid);
     const p1 = graphPositions[fid];
     if (!w || !p1) return;
     const x1 = cx + p1.x * zoom;
     const y1 = cy + p1.y * zoom;
-    const nbs = getNeighbors(w).slice(0, 6);
+    const nbs = getNeighbors(w).slice(0, 5);
     nbs.forEach(nb => {
       const p2 = graphPositions[nb.targetId];
       if (!p2) return;
       ctx.beginPath();
       ctx.moveTo(x1, y1);
       ctx.lineTo(cx + p2.x * zoom, cy + p2.y * zoom);
-      ctx.strokeStyle = "rgba(20, 20, 19, 0.10)";
+      ctx.strokeStyle = "rgba(20, 20, 19, 0.07)";
       ctx.stroke();
     });
   });
 
-  // Terracotta trajectory line of Attention chain
+  // 2. Highlighted connection lines from Selected Work to its Strongly Related Works
+  if (selectedWork && graphPositions[selectedWork.id]) {
+    const pSel = graphPositions[selectedWork.id];
+    const sx = cx + pSel.x * zoom;
+    const sy = cy + pSel.y * zoom;
+
+    for (let i = selectedNeighbors.length - 1; i >= 0; i--) {
+      const nb = selectedNeighbors[i];
+      const pNb = graphPositions[nb.targetId];
+      if (!pNb) continue;
+      const tx = cx + pNb.x * zoom;
+      const ty = cy + pNb.y * zoom;
+      const isTop3 = i < 3;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(tx, ty);
+      ctx.strokeStyle = isTop3 ? "rgba(201, 100, 66, 0.76)" : "rgba(201, 100, 66, 0.45)";
+      ctx.lineWidth = isTop3 ? 2.4 : 1.5;
+      if (!isTop3) {
+        ctx.setLineDash([4, 3]);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  // 3. Terracotta trajectory line of Attention chain
   if (likedList.length >= 2) {
     ctx.beginPath();
     for (let i = likedList.length - 1; i >= 0; i--) {
@@ -1147,62 +1385,147 @@ function drawNetworkGraph() {
       else ctx.lineTo(px, py);
     }
     ctx.strokeStyle = "#C96442";
-    ctx.lineWidth = 2.2;
+    ctx.lineWidth = 2.0;
     ctx.stroke();
   }
 
   graphNodeHits = [];
+  const foregroundNodes = [];
 
-  // Draw nodes with deep zoom labels
+  // 4. First Pass: Draw non-highlighted background nodes (dimmed so related nodes stand out)
   for (let i = 0; i < worksCatalog.length; i++) {
     const w = worksCatalog[i];
     const p = graphPositions[w.id];
     if (!p) continue;
     const nx = cx + p.x * zoom;
     const ny = cy + p.y * zoom;
-    if (nx < -40 || nx > W + 40 || ny < -40 || ny > H + 40) continue;
+    if (nx < -60 || nx > W + 60 || ny < -60 || ny > H + 60) continue;
 
-    const isCurrent = currentWork && w.id === currentWork.id;
-    const isSelected = selectedGraphWorkId === w.id;
+    const isSelected = selectedWork && selectedWork.id === w.id;
+    const relInfo = relatedRankMap.get(w.id);
     const isLiked = likedSet.has(w.id);
-    const isSkipped = skippedSet.has(w.id);
+    const isCurrent = currentWork && w.id === currentWork.id;
 
-    const r = isCurrent || isSelected ? 8.5 : (isLiked ? 6.5 : (w.o ? 3.8 : 2.4));
+    if (isSelected || relInfo || isLiked || isCurrent) {
+      foregroundNodes.push({ w, nx, ny, isSelected, relInfo, isLiked, isCurrent });
+      continue;
+    }
+
+    const isSkipped = skippedSet.has(w.id);
+    const r = w.o ? 3.4 : 2.2;
 
     ctx.beginPath();
     ctx.arc(nx, ny, r, 0, Math.PI * 2);
-    if (isCurrent || isSelected) {
-      ctx.fillStyle = "#141413";
-    } else if (isLiked) {
-      ctx.fillStyle = "#C96442";
-    } else if (isSkipped) {
+    if (isSkipped) {
       ctx.fillStyle = "#D8D4C8";
+      ctx.globalAlpha = 0.25;
     } else {
       ctx.fillStyle = CLUSTER_COLORS[w.c] || "#78756E";
-      ctx.globalAlpha = w.o ? 0.72 : 0.35;
+      // Dim unrelated nodes when a work is selected so related works pop out
+      ctx.globalAlpha = w.o ? 0.38 : 0.18;
     }
     ctx.fill();
     ctx.globalAlpha = 1.0;
 
-    // Deep zoom typography:
-    // When zoomed in, titles and author names become vividly clear
-    const showTitle = isCurrent || isSelected || isLiked || (graphView.zoom >= 2.5 && w.o) || (graphView.zoom >= 4.0);
-    const showAuthor = (graphView.zoom >= 5.0 && (w.o || isLiked)) || (graphView.zoom >= 8.0);
+    const showTitle = (graphView.zoom >= 2.8 && w.o) || (graphView.zoom >= 4.5);
+    const showAuthor = (graphView.zoom >= 5.5 && w.o) || (graphView.zoom >= 8.0);
 
     if (showTitle) {
-      ctx.fillStyle = (isCurrent || isSelected) ? "#141413" : "#3A3832";
-      ctx.font = (isCurrent || isSelected || isLiked) ? "600 12px serif" : "10px serif";
+      ctx.fillStyle = "#5A574F";
+      ctx.font = "10px serif";
       ctx.textAlign = "center";
-      ctx.fillText(w.t.slice(0, 11), nx, ny + r + 13);
+      ctx.fillText(w.t.slice(0, 11), nx, ny + r + 12);
 
       if (showAuthor) {
         ctx.fillStyle = "#8C887E";
         ctx.font = "9px sans-serif";
-        ctx.fillText(w.a, nx, ny + r + 25);
+        ctx.fillText(w.a, nx, ny + r + 23);
       }
     }
 
-    graphNodeHits.push({ id: w.id, x: nx, y: ny, r: Math.max(12, r + 6) });
+    graphNodeHits.push({ id: w.id, x: nx, y: ny, r: Math.max(11, r + 5) });
+  }
+
+  // Sort foreground nodes so selected node is drawn last (on very top), preceded by related nodes
+  foregroundNodes.sort((a, b) => {
+    const scoreA = a.isSelected ? 100 : (a.relInfo ? 50 - a.relInfo.rank : 10);
+    const scoreB = b.isSelected ? 100 : (b.relInfo ? 50 - b.relInfo.rank : 10);
+    return scoreA - scoreB;
+  });
+
+  // 5. Second Pass: Draw Liked, Current, Strongly Related, and Selected nodes prominently
+  for (let i = 0; i < foregroundNodes.length; i++) {
+    const item = foregroundNodes[i];
+    const { w, nx, ny, isSelected, relInfo, isLiked, isCurrent } = item;
+
+    let r = 6.0;
+    if (isSelected) {
+      r = 9.0;
+    } else if (relInfo) {
+      r = relInfo.rank <= 3 ? 7.2 : 6.0;
+    } else if (isCurrent) {
+      r = 7.0;
+    } else if (isLiked) {
+      r = 6.0;
+    }
+
+    // Outer halo for Selected and Related nodes
+    if (isSelected) {
+      ctx.beginPath();
+      ctx.arc(nx, ny, r + 6.5, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(201, 100, 66, 0.20)";
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(nx, ny, r + 3.2, 0, Math.PI * 2);
+      ctx.strokeStyle = "#C96442";
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+    } else if (relInfo) {
+      ctx.beginPath();
+      ctx.arc(nx, ny, r + 5.0, 0, Math.PI * 2);
+      ctx.fillStyle = relInfo.rank <= 3 ? "rgba(201, 100, 66, 0.22)" : "rgba(201, 100, 66, 0.12)";
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(nx, ny, r + 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = "#FAF9F5";
+      ctx.fill();
+      ctx.strokeStyle = "#C96442";
+      ctx.lineWidth = relInfo.rank <= 3 ? 2.0 : 1.5;
+      ctx.stroke();
+    }
+
+    // Core circle
+    ctx.beginPath();
+    ctx.arc(nx, ny, r, 0, Math.PI * 2);
+    if (isSelected) {
+      ctx.fillStyle = "#141413";
+    } else if (relInfo) {
+      ctx.fillStyle = CLUSTER_COLORS[w.c] || "#C96442";
+    } else if (isLiked) {
+      ctx.fillStyle = "#C96442";
+    } else {
+      ctx.fillStyle = "#141413";
+    }
+    ctx.fill();
+
+    // Label rendering
+    const shortTitle = w.t.length > 12 ? w.t.slice(0, 12) + "…" : w.t;
+    if (isSelected) {
+      drawGraphLabelPill(ctx, shortTitle, `選択中 ・ ${w.a}`, nx, ny + r + 15, true, false);
+    } else if (relInfo) {
+      const pct = Math.min(99, Math.max(70, Math.round(relInfo.weight * 100)));
+      const sub = (relInfo.rank <= 3 || graphView.zoom >= 1.6) ? `関連 #${relInfo.rank} (${pct}%) ・ ${w.a}` : `関連 #${relInfo.rank} (${pct}%)`;
+      drawGraphLabelPill(ctx, shortTitle, sub, nx, ny + r + 13, false, true);
+    } else {
+      ctx.fillStyle = "#141413";
+      ctx.font = "600 11px serif";
+      ctx.textAlign = "center";
+      ctx.fillText(shortTitle, nx, ny + r + 13);
+    }
+
+    graphNodeHits.push({ id: w.id, x: nx, y: ny, r: Math.max(16, r + 8) });
   }
 }
 
@@ -1290,11 +1613,38 @@ function initApp() {
     graphView.zoom = Math.max(0.3, graphView.zoom / 1.45);
     drawNetworkGraph();
   });
-  document.getElementById("recenterGraphBtn").addEventListener("click", () => {
-    graphView.x = 0;
-    graphView.y = 0;
-    graphView.zoom = 1.0;
+  function centerGraphOnWork(workId, targetZoom) {
+    ensureGraphPositions();
+    const p = workId && graphPositions[workId];
+    const canvas = document.getElementById("fullGraphCanvas");
+    if (!p || !canvas) {
+      graphView.x = 0;
+      graphView.y = 0;
+      graphView.zoom = 1.0;
+      drawNetworkGraph();
+      return;
+    }
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const bottomDockHeight = 110;
+    const responsiveBase = Math.min(rect.width, rect.height - bottomDockHeight) / 620;
+    if (targetZoom) graphView.zoom = targetZoom;
+    const zoom = graphView.zoom * responsiveBase;
+    graphView.x = -p.x * zoom;
+    graphView.y = -p.y * zoom;
     drawNetworkGraph();
+  }
+
+  document.getElementById("recenterGraphBtn").addEventListener("click", () => {
+    centerGraphOnWork(selectedGraphWorkId || (currentWork && currentWork.id), Math.max(1.2, graphView.zoom));
+  });
+
+  document.getElementById("graphRelatedStrip").addEventListener("click", (e) => {
+    const chip = e.target.closest(".graph-related-chip");
+    if (!chip) return;
+    const rid = chip.getAttribute("data-related-id");
+    if (!rid) return;
+    updateSelectedGraphBar(rid);
+    centerGraphOnWork(rid);
   });
 
   document.getElementById("graphJumpBtn").addEventListener("click", () => {
